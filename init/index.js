@@ -1,7 +1,7 @@
 const mongoose= require("mongoose")
-const data =require('./data.js')
-const Listing = require('./models/listing.js')
-
+const initData =require('./data1.js')
+//const Listing= require('models/listing.js')
+const Listing = require("../models/listing.js");
 
 main().then((res)=>{
     console.log('Successfully Connect')
@@ -12,3 +12,12 @@ main().then((res)=>{
 async function main(){
     await mongoose.connect('mongodb://127.0.0.1:27017/wanderLust')
 }
+
+const initDB= async ()=>{
+    await Listing.deleteMany({})
+    await Listing.insertMany(initData.data)
+    console.log('Data was initilize')
+    console.log(initData.data)
+}
+
+initDB()

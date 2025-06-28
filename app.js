@@ -4,11 +4,12 @@ const mongoose= require('mongoose')
 const port= 8080
 const path= require('path')
 const Listing = require('./models/listing.js')
-
+const methodOverride= require('method-override')
 
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
 app.use(express.urlencoded({extended:true}))
+app.use(methodOverride("_method"))
 
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
@@ -72,3 +73,23 @@ app.get('/listing/:id',async(req,res)=>{
     res.render('listings/show.ejs',{listing})
 })
 
+//edit route
+app.get('/listing/:id/edit', async (req,res)=>{
+    let {id} = req.params
+    let listing = await Listing.findById(id)
+    res.render('listings/edit.ejs',{listing})
+})
+
+//update route
+app.put('/listing/:id', async (req,res)=>{
+    let {id} = req.params
+    await Listing.findByIdAndUpdate(id,{...req.body.listing})
+    res.redirect(`/listing/${id}`)
+})
+
+//Delete route
+app.delete("/listing/:id",async (req,res)=>{
+    let {id}= req.params
+    await Listing.findByIdAndDelete(id)
+    res.redirect('/listing')
+})

@@ -6,6 +6,7 @@ const path= require('path')
 const Listing = require('./models/listing.js')
 const methodOverride= require('method-override')
 const ejsMate= require('ejs-mate')
+const wrapAsync=require('./utils/wrapAsync.js')
 
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
@@ -62,12 +63,14 @@ app.get('/listing/new',(req,res)=>{
 })
 
 
-app.post('/listing', async(req,res)=>{
+app.post('/listing', wrapAsync(async(req,res,next)=>{
+    
     //let listing = req.body.listing
    const newListing = new Listing( req.body.listing) // New Methods
      await newListing.save()
      res.redirect('/listing')
-})
+   
+}))
 
 //show route
 app.get('/listing/:id',async(req,res)=>{
@@ -95,4 +98,8 @@ app.delete("/listing/:id",async (req,res)=>{
     let {id}= req.params
     await Listing.findByIdAndDelete(id)
     res.redirect('/listing')
+})
+
+app.use((err,req,res,next)=>{
+    res.send("Something Went Wrong !")
 })

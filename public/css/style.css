@@ -101,3 +101,11 @@ body {
 .btns{
     display: flex;
 }
+
+
+/* Error sms */
+.alert-danger{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

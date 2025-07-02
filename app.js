@@ -8,6 +8,7 @@ const methodOverride= require('method-override')
 const ejsMate= require('ejs-mate')
 const wrapAsync=require('./utils/wrapAsync.js')
 const ExpressError= require('./utils/ExpressError.js')
+const {listingSchema}=require('./schema.js')
 
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
@@ -15,6 +16,8 @@ app.use(express.urlencoded({extended:true}))
 app.use(methodOverride("_method"))
 app.use(express.static(path.join(__dirname,"/public")))
 app.engine('ejs',ejsMate)
+app.use(express.json());
+
 
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
@@ -66,10 +69,15 @@ app.get('/listing/new',(req,res)=>{
 
 app.post('/listing', wrapAsync( async(req,res,next)=>{
     
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send valid data for Listing")
-    }
+    // if(!req.body.listing){
+    //     throw new ExpressError(400,"Send valid data for Listing")
+    // }
     //let listing = req.body.listing
+    let result=listingSchema.validate(req.body)    //Joi validation
+    console.log(result)
+    if(result.error){
+        throw new ExpressError(400,result.error)
+    }
    const newListing = new Listing( req.body.listing) // New Methods
      await newListing.save()
      res.redirect('/listing')

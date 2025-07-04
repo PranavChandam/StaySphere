@@ -112,7 +112,7 @@ app.post('/listing',validateListing, wrapAsync( async(req,res,next)=>{
 //show route
 app.get('/listing/:id', wrapAsync(async(req,res)=>{
     let {id}= req.params
-    let listing = await Listing.findById(id)
+    let listing = await Listing.findById(id).populate('reviews');
     res.render('listings/show.ejs',{listing})
 }))
 
@@ -143,7 +143,8 @@ app.post("/listing/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
    let listing= await Listing.findById(req.params.id)
    let newReview= new Review(req.body.review)
 
-   listing.reviews.push(newReview)
+   listing.reviews.push(newReview._id); 
+
 
    await newReview.save()
    await listing.save()
@@ -151,6 +152,15 @@ app.post("/listing/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
   res.redirect(`/listing/${listing.id}`)
 }))
 
+//delete review route
+app.delete("/listing/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
+   let {id,reviewId}=req.params
+
+   await Listing.findByIdAndUpdate(id, {$pull:{reviews:reviewId} })
+   await Review.findByIdAndDelete(reviewId)
+
+   res.redirect(`/listing/${id}`)
+}))
 
 app.all(/.*/,(req,res,next)=>{
     next(new ExpressError(404,"Page not found"))

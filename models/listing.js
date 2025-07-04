@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const review = require('./review');
+//const review = require('./review');
 const Schema = mongoose.Schema;
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1506744038136-46273834b3fb"; // Replace with any valid fallback image

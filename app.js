@@ -13,10 +13,11 @@ const {listingSchema}=require('./schema.js')
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
 app.use(express.urlencoded({extended:true}))
+app.use(express.json());
 app.use(methodOverride("_method"))
 app.use(express.static(path.join(__dirname,"/public")))
 app.engine('ejs',ejsMate)
-app.use(express.json());
+
 
 
 app.listen(port,()=>{
@@ -54,6 +55,17 @@ async function main(){
 
 // })
 
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(res.body)
+    let errMsg=error.details.map((el)=>el.message).join(",")
+    if(error){
+        throw new ExpressError(400,errMsg)
+    }
+    else{
+        next()
+    }
+}
+
 //index route
 app.get("/listing", wrapAsync(async(req,res)=>{
    const allListing= await Listing.find({})
@@ -67,7 +79,7 @@ app.get('/listing/new',(req,res)=>{
 })
 
 
-app.post('/listing', wrapAsync( async(req,res,next)=>{
+app.post('/listing',validateListing, wrapAsync( async(req,res,next)=>{
     
     // if(!req.body.listing){
     //     throw new ExpressError(400,"Send valid data for Listing")
@@ -99,11 +111,8 @@ app.get('/listing/:id/edit',wrapAsync( async (req,res)=>{
 }))
 
 //update route
-app.put('/listing/:id', wrapAsync( async (req,res)=>{
+app.put('/listing/:id',validateListing, wrapAsync( async (req,res)=>{
     let {id} = req.params
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send valid data for Listing")
-    }
     await Listing.findByIdAndUpdate(id,{...req.body.listing})
     res.redirect(`/listing/${id}`)
 }))

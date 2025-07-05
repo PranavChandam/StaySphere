@@ -3,13 +3,12 @@ const app= express()
 const mongoose= require('mongoose')
 const port= 8080
 const path= require('path')
-const Listing = require('./models/listing.js')
 const methodOverride= require('method-override')
 const ejsMate= require('ejs-mate')
-const wrapAsync=require('./utils/wrapAsync.js')
 const ExpressError= require('./utils/ExpressError.js')
-const {listingSchema,reviewSchema}=require('./schema.js')
-const Review= require("./models/review.js")
+
+const listings=require('./routes/listing.js')
+const reviews=require('./routes/review.js')
 
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
@@ -41,126 +40,10 @@ async function main(){
     await mongoose.connect("mongodb://127.0.0.1:27017/wanderLust")
 }
 
-// app.get("/testListing", async (req,res)=>{
-//     const sampleListing= new Listing({
-//         title: "Sample Listing",
-//         description: "This is a sample listing",
-//         price: 1000,
-//         location:'Goa',
-//         country:'India'
-//     })
-    
-//     await sampleListing.save()
-//     console.log("sample was saved")
-//     res.send('Successful testing')
 
-// })
+app.use('/listing',listings)
+app.use('/listing/:id/reviews',reviews)
 
-const validateListing=(req,res,next)=>{
-    let {error}=listingSchema.validate(req.body)
-    let errMsg=error.details.map((el)=>el.message).join(",")
-    if(error){
-        throw new ExpressError(400,errMsg)
-    }
-    else{
-        next()
-    }
-}
-
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-
-    if (error) {
-        const errMsg = error?.details?.map(el => el.message).join(", ") || "Validation failed";
-        throw new ExpressError(400, errMsg);
-    }
-
-    next();
-};
-
-
-//index route
-app.get("/listing", wrapAsync(async(req,res)=>{
-   const allListing= await Listing.find({})
-   res.render('listings/index.ejs', { allListing });
-
-}))
-
-//New route
-app.get('/listing/new',(req,res)=>{
-   res.render('listings/new.ejs')
-})
-
-
-app.post('/listing',validateListing, wrapAsync( async(req,res,next)=>{
-    
-    // if(!req.body.listing){
-    //     throw new ExpressError(400,"Send valid data for Listing")
-    // }
-    //let listing = req.body.listing
-    let result=listingSchema.validate(req.body)    //Joi validation
-    console.log(result)
-    if(result.error){
-        throw new ExpressError(400,result.error)
-    }
-   const newListing = new Listing( req.body.listing) // New Methods
-     await newListing.save()
-     res.redirect('/listing')
-   
-}))
-
-//show route
-app.get('/listing/:id', wrapAsync(async(req,res)=>{
-    let {id}= req.params
-    let listing = await Listing.findById(id).populate('reviews');
-    res.render('listings/show.ejs',{listing})
-}))
-
-//edit route
-app.get('/listing/:id/edit',wrapAsync( async (req,res)=>{
-    let {id} = req.params
-    let listing = await Listing.findById(id)
-    res.render('listings/edit.ejs',{listing})
-}))
-
-//update route
-app.put('/listing/:id',validateListing, wrapAsync( async (req,res)=>{
-    let {id} = req.params
-    await Listing.findByIdAndUpdate(id,{...req.body.listing})
-    res.redirect(`/listing/${id}`)
-}))
-
-//Delete route
-app.delete("/listing/:id",wrapAsync( async (req,res)=>{
-    let {id}= req.params
-    await Listing.findByIdAndDelete(id)
-    res.redirect('/listing')
-}))
-
-//Reviews
-//post route
-app.post("/listing/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
-   let listing= await Listing.findById(req.params.id)
-   let newReview= new Review(req.body.review)
-
-   listing.reviews.push(newReview._id); 
-
-
-   await newReview.save()
-   await listing.save()
-
-  res.redirect(`/listing/${listing.id}`)
-}))
-
-//delete review route
-app.delete("/listing/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
-   let {id,reviewId}=req.params
-
-   await Listing.findByIdAndUpdate(id, {$pull:{reviews:reviewId} })
-   await Review.findByIdAndDelete(reviewId)
-
-   res.redirect(`/listing/${id}`)
-}))
 
 app.all(/.*/,(req,res,next)=>{
     next(new ExpressError(404,"Page not found"))

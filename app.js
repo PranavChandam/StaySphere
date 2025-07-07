@@ -52,15 +52,6 @@ app.use((req,res,next)=>{
     next()
 })
 
-// app.use("/demoUser",async(req,res)=>{
-//     let fakeUser= new User({
-//         email:"student@gmail.com",
-//         username:"student",
-//     })
-
-//     let registerUser= await User.register(fakeUser,"HelloWorld")
-//     res.send(registerUser)
-// })
 
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
@@ -93,8 +84,6 @@ app.all(/.*/,(req,res,next)=>{
 })
 
 app.use((err,req,res,next)=>{
-    //res.send("Something Went Wrong !")
     let {status=500,message="Something Went wrong"}= err
-    // res.status(status).send(message)
     res.render('Error.ejs',{message})
 })

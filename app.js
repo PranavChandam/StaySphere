@@ -10,10 +10,12 @@ const session=require("express-session")
 const flash=require("connect-flash")
 const passport=require('passport')
 const LocalStrategy= require("passport-local")
-const User=require('./models/user.js')
+const User=require('./models/user.js')  //User Model require here for passport middleware/authentication
 
-const listings=require('./routes/listing.js')
-const reviews=require('./routes/review.js')
+
+const listingRouter=require('./routes/listing.js')
+const reviewsRouter=require('./routes/review.js')
+const userRouter=require("./routes/user.js")
 
 app.set('view engine','ejs')
 app.set("views",path.join(__dirname,"views"))
@@ -50,15 +52,15 @@ app.use((req,res,next)=>{
     next()
 })
 
-app.use("/demoUser",async(req,res)=>{
-    let fakeUser= new User({
-        email:"student@gmail.com",
-        username:"student",
-    })
+// app.use("/demoUser",async(req,res)=>{
+//     let fakeUser= new User({
+//         email:"student@gmail.com",
+//         username:"student",
+//     })
 
-    let registerUser= await User.register(fakeUser,"HelloWorld")
-    res.send(registerUser)
-})
+//     let registerUser= await User.register(fakeUser,"HelloWorld")
+//     res.send(registerUser)
+// })
 
 app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
@@ -81,8 +83,9 @@ async function main(){
 }
 
 
-app.use('/listing',listings)
-app.use('/listing/:id/reviews',reviews)
+app.use('/listing',listingRouter)
+app.use('/listing/:id/reviews',reviewsRouter)
+app.use('/',userRouter)
 
 
 app.all(/.*/,(req,res,next)=>{

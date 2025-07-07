@@ -1,0 +1,60 @@
+<% layout('/layouts/boilerPlate') %>
+
+<style>
+/* Animated Border Wrapper */
+.animated-border {
+    position: relative;
+    padding: 2px;
+    border-radius: 15px;
+    background: linear-gradient(270deg, #00f, #0ff, #0f0, #ff0, #f00, #f0f, #00f);
+    background-size: 600% 600%;
+    animation: spinBorder 5s linear infinite;
+}
+
+@keyframes spinBorder {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.animated-border > .content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 13px;
+}
+</style>
+
+<div class="row mt-3 mb-2">
+    <div class="col-6 offset-3 signup">
+        <div class="animated-border">
+            <div class="content">
+                <h2>Sign-up for wanderLust</h2>
+                <form action="/signup" method="post" class="needs-validation" novalidate>
+
+                    <div class="mb-5 mt-4">
+                        <label for="title">Enter Username</label>
+                        <input name="username" id="username" type="text" class="form-control" placeholder="Enter Username" required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="email">Enter Email</label>
+                        <input name="email" id="email" type="email" class="form-control" placeholder="Enter Email" required>
+                        <div class="invalid-feedback">Please Give Validate Email!</div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="password">Enter Password</label>
+                        <input name="password" id="password" type="password" class="form-control" placeholder="Enter Password" required>
+                        <div class="invalid-feedback">Please Set Password!</div>
+                    </div>
+
+                    <button class="btn btn-success mb-3">Signup</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

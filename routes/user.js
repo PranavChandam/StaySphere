@@ -14,7 +14,6 @@ router.post("/signup",wrapAsync( async(req,res)=>{
     let {username,email,password}=req.body
     const newUser= new User({username,email})
     const registerUser= await User.register(newUser,password)
-    console.log(registerUser)
     req.flash('success',"User Register Successfully")
     res.redirect('/login')
   }
@@ -34,6 +33,16 @@ router.post("/login",
     async(req,res)=>{
       req.flash("success","Welcome Back To WanderLust")
       res.redirect('/listing')
+})
+
+router.get('/logout',(req,res,next)=>{
+  req.logOut((err)=>{
+    if(err){
+       return next(err)
+    }
+  })
+  req.flash('Success',"Logged Out Successfully")
+  res.redirect('/listing')
 })
 
 module.exports=router

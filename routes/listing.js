@@ -1,21 +1,9 @@
 const express=require('express')
 const router =express.Router()
 const wrapAsync=require('../utils/wrapAsync.js')
-const ExpressError= require('../utils/ExpressError.js')
-const {listingSchema}=require('../schema.js')
 const Listing = require('../models/listing.js')
-const {isLoggedIn,isOwner} = require('../middleware.js')
-
-const validateListing = (req, res, next) => {
-    let { error } = listingSchema.validate(req.body);
-
-    if (error) {
-        let errMsg = error.details.map((el) => el.message).join(", ") || "Validation failed";
-        throw new ExpressError(400, errMsg);
-    } else {
-        next();
-    }
-};
+const {isLoggedIn,isOwner,validateListing} = require('../middleware.js')
+const { listingSchema } = require('../schema.js');
 
 //index route
 router.get("/", wrapAsync(async(req,res)=>{
@@ -37,11 +25,11 @@ router.post('/',isLoggedIn,validateListing, wrapAsync( async(req,res,next)=>{
     //     throw new ExpressError(400,"Send valid data for Listing")
     // }
     //let listing = req.body.listing
-    let result=listingSchema.validate(req.body)    //Joi validation
-    //console.log(result)
-    if(result.error){
-        throw new ExpressError(400,result.error)
-    }
+    // let result=listingSchema.validate(req.body)    //Joi validation
+    // //console.log(result)
+    // if(result.error){
+    //     throw new ExpressError(400,result.error)
+    // }
    const newListing = new Listing( req.body.listing) // New Methods
     newListing.owner=req.user._id
      await newListing.save()
@@ -53,7 +41,11 @@ router.post('/',isLoggedIn,validateListing, wrapAsync( async(req,res,next)=>{
 //show route
 router.get('/:id', wrapAsync(async(req,res)=>{
     let {id}= req.params
-    let listing = await Listing.findById(id).populate('reviews').populate('owner')
+    let listing = await Listing.findById(id).populate({path:'reviews',
+     populate:{
+        path:'author'
+     }
+    }).populate('owner')
     if(!listing){
         req.flash("error","Listing Does Not Existed!")
        return res.redirect("/listing")

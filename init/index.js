@@ -1,5 +1,5 @@
 const mongoose= require("mongoose")
-const initData =require('./data1.js')
+const initData =require('./data.js')
 //const Listing= require('models/listing.js')
 const Listing = require("../models/listing.js");
 

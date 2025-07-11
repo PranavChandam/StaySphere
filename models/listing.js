@@ -13,8 +13,8 @@ const listingSchema = new Schema({
         type: String
     },
     image: {
-        type: String,
-        default: DEFAULT_IMAGE
+        url:String,
+        filename:String
     },
     price: {
         type: Number
@@ -37,21 +37,21 @@ const listingSchema = new Schema({
     }
 });
 
-listingSchema.pre('save', function (next) {
-    if (!this.image || this.image.trim() === "") {
-        this.image = DEFAULT_IMAGE;
-    }
-    next();
-});
+// listingSchema.pre('save', function (next) {
+//     if (!this.image || this.image.trim() === "") {
+//         this.image = DEFAULT_IMAGE;
+//     }
+//     next();
+// });
 
-listingSchema.pre('findOneAndUpdate', function (next) {
-    const update = this.getUpdate();
-    if (update && update.image !== undefined && update.image.trim() === "") {
-        update.image = DEFAULT_IMAGE;
-        this.setUpdate(update);
-    }
-    next();
-});
+// listingSchema.pre('findOneAndUpdate', function (next) {
+//     const update = this.getUpdate();
+//     if (update && update.image !== undefined && update.image.trim() === "") {
+//         update.image = DEFAULT_IMAGE;
+//         this.setUpdate(update);
+//     }
+//     next();
+// });
 
 listingSchema.post("findOneAndDelete",async(listing)=>{
     if(listing){

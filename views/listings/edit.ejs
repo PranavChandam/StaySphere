@@ -23,6 +23,12 @@
         </div>
 
         <div class="mb-3">
+            original Listing Image <br>
+           <img src="<%= listing.image.url %>" style="width:250px; height:250px; object-fit:cover; filter:blur(1px);" />
+
+        </div>
+
+        <div class="mb-3">
         <label for="image" class="form-label">Upload Image</label><br>
         <input name="listing[image]"  type="file" class="form-control">
         <!-- <div class="invalid-feedback">

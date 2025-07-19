@@ -33,14 +33,20 @@ StaySphere is a web application that allows users to explore rental listings, ho
 
 ## 🗂️ Project Structure
 StaySphere/
+├── controllers/               # Handles route logic (e.g., listings, auth, reviews)
+├── init/                      # Initial DB setup or seeding logic
+├── models/                    # Mongoose schemas for DB (e.g., User, Listing, Review)
+├── public/                    # Static assets (CSS, JS, client-side images)
+├── routes/                    # Express route definitions (listingRoutes, authRoutes)
+├── utils/                     # Utility functions (e.g., error handling, validation)
+├── views/                     # EJS templates (home.ejs, listings.ejs, partials/)
+├── .gitignore                 # Ignored files (node_modules, .env, etc.)
+├── README.md                  # Project documentation 
 │
-├── controllers/ # Route logic
-├── models/ # Mongoose models
-├── routes/ # App routing
-├── views/ # EJS templates
-├── public/ # Static assets (CSS, images)
-├── uploads/ # Uploaded images (if not using Cloudinary)
-├── .env # Environment variables
-├── app.js # Main Express app
-├── package.json
-└── README.md
+├── app.js                     # Main Express app configuration
+├── cloudConfig.js             # Cloudinary integration for image uploads
+├── middleware.js              # Custom middlewares (e.g., auth, validation)
+├── package.json               # Project metadata and scripts
+├── package-lock.json          # Dependency lock file
+└── schema.js                  # Reusable schema validation or additional schema utils
+

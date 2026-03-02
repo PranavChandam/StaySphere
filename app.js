@@ -62,9 +62,19 @@ app.listen(port,()=>{
     console.log(`server is running on port ${port}`)
 })
 
-app.get('/',(req,res)=>{ 
-    res.send("Hii")
-})
+const Listing = require("./models/listing.js"); // make sure you have Listing model
+
+app.get('/', async (req, res) => { 
+   try {
+      const allListing = await Listing.find({});
+      res.render('listings/index.ejs', { allListing });
+   } catch (err) {
+      console.log(err);
+      req.flash("error", "Cannot load listings right now");
+      res.redirect("/");
+   }
+});
+
 
 main().then(()=>{
     console.log("Connect Successfully")
